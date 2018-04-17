@@ -8,6 +8,12 @@ parser.add_argument("-d", "--description",
     default="--",
     help="This is the description of this test, "
          "it will be included in the report")
+parser.add_argument("-k", "--kernel-name",
+    default="Python3",
+    help="Defines the ipython kernel to be used for executing the notebook")
+parser.add_argument("-o", "--result-filename",
+    default="_report",
+    help="Defines how the outputted html file will be called")
 
 script_arguments = parser.parse_args()
 
@@ -16,38 +22,44 @@ import nbformat
 from nbconvert.preprocessors import ExecutePreprocessor
 import subprocess
 import sys
-APPNAME = 'create_report'
+APPNAME = 'generate_report'
 
+if ".html" in script_arguments.result_filename:
+    script_arguments.result_filename = script_arguments.result_filename[0:-5]
+
+RESULT_FILENAME = script_arguments.result_filename + '.ipynb'
+
+print('[{}] Reading template...'.format(APPNAME))
 with open("report_template.ipynb") as f:
     nb = nbformat.read(f, as_version=4)
-
 
 orig_parameters = nbparameterise.extract_parameters(nb)
 
 ep = ExecutePreprocessor(
     timeout=600,
-    kernel_name=nb.metadata.get('kernelspec', {}).get('name', 'python3'))
+    kernel_name=script_arguments.kernel_name)
 
 params = nbparameterise.parameter_values(
     orig_parameters,
     testfile_name=script_arguments.filename,
     description=script_arguments.description)
 
+print('[{}] Replacing parameters...'.format(APPNAME))
 new_nb = nbparameterise.replace_definitions(nb, params, execute=False)
 
+print('[{}] Executing notebook...'.format(APPNAME))
 _ = ep.preprocess(new_nb, {'metadata': {'path': '.'}})
-RESULT_FILENAME = "_report.ipynb"
+
+print('[{}] Saving notebook to temporary file...'.format(APPNAME))
 with open(RESULT_FILENAME, 'wt') as f:
     nbformat.write(new_nb, f)
 
 try:
-    # Convert to html
-    print('[{}] Converting to html'.format(APPNAME))
+    print('[{}] Converting to html...'.format(APPNAME))
     subprocess.call(['jupyter', 'nbconvert', RESULT_FILENAME, '--to', 'html'])
 
 finally:
-    # Delete unnecessary notebook file
-    print('[{}] Deleting {}'.format(APPNAME, RESULT_FILENAME))
+    print('[{}] Deleting {}...'.format(APPNAME, RESULT_FILENAME))
     if sys.platform == 'win32':
         subprocess.call(['del', RESULT_FILENAME], shell=True)
     else:
