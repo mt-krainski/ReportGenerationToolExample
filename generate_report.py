@@ -24,7 +24,9 @@ with open("report_template.ipynb") as f:
 
 orig_parameters = nbparameterise.extract_parameters(nb)
 
-ep = ExecutePreprocessor(timeout=600, kernel_name='reportTool')
+ep = ExecutePreprocessor(
+    timeout=600,
+    kernel_name=nb.metadata.get('kernelspec', {}).get('name', 'python3'))
 
 params = nbparameterise.parameter_values(
     orig_parameters,
