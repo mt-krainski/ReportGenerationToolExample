@@ -11,9 +11,9 @@ parser.add_argument("-d", "--description",
 parser.add_argument("-k", "--kernel-name",
     default="Python3",
     help="Defines the ipython kernel to be used for executing the notebook")
-parser.add_argument("-o", "--result-filename",
+parser.add_argument("-o", "--output",
     default="_report",
-    help="Defines how the outputted html file will be called")
+    help="Defines the name of created html report file")
 
 script_arguments = parser.parse_args()
 
