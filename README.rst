@@ -13,7 +13,13 @@ Usage example:
 
 ``python ./generate_report.py --filename test_data/testFileA.csv --kernel-name python3 --output result.html --description "This is my test description"``
 
-After that, a new html file will be created
+After that, a new result.html file will be created.
+
+When using virtual environments be sure to create an ipython kernel for that environment with:
+
+``python -m ipykernel install --user --name my_env --display-name "Python (my_env)"``
+
+And change the value ``--kernel-name`` parameter to ``my_env``.
 
 TODO:
 

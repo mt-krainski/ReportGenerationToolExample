@@ -24,10 +24,10 @@ import subprocess
 import sys
 APPNAME = 'generate_report'
 
-if ".html" in script_arguments.result_filename:
-    script_arguments.result_filename = script_arguments.result_filename[0:-5]
+if ".html" in script_arguments.output:
+    script_arguments.output = script_arguments.output[0:-5]
 
-RESULT_FILENAME = script_arguments.result_filename + '.ipynb'
+RESULT_FILENAME = script_arguments.output + '.ipynb'
 
 print('[{}] Reading template...'.format(APPNAME))
 with open("report_template.ipynb") as f:
@@ -41,7 +41,7 @@ ep = ExecutePreprocessor(
 
 params = nbparameterise.parameter_values(
     orig_parameters,
-    testfile_name=script_arguments.filename,
+    test_filename=script_arguments.filename,
     description=script_arguments.description)
 
 print('[{}] Replacing parameters...'.format(APPNAME))
